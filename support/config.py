@@ -11,3 +11,5 @@ EMBED_MODEL = env("EMBED_MODEL", "BAAI/bge-small-en-v1.5")
 DOCS_DIR = env("DOCS_DIR", "help_docs")
 INDEX_DIR = env("INDEX_DIR", ".chroma")
 DB = env("DB", "support.db")
+# Start narrow: in FAQ-only mode account questions escalate instead of using tools.
+FAQ_ONLY = env("FAQ_ONLY", "1") == "1"
