@@ -1,0 +1,17 @@
+{
+  "cus_001": {
+    "name": "Maria Lindqvist", "workspace": "Lindqvist Physio",
+    "subscription": {"plan": "Pro", "billing": "monthly", "seats": 2, "status": "active", "renews": "2026-01-03"},
+    "invoices": [
+      {"id": "INV-2025-1103", "date": "2025-11-03", "amount_eur": 58.0, "status": "paid"},
+      {"id": "INV-2025-1003", "date": "2025-10-03", "amount_eur": 58.0, "status": "paid"}
+    ]
+  },
+  "cus_002": {
+    "name": "Acme Oy", "workspace": "Acme",
+    "subscription": {"plan": "Team", "billing": "annual", "seats": 8, "status": "past_due", "renews": "2026-09-21"},
+    "invoices": [
+      {"id": "INV-2025-0921", "date": "2025-09-21", "amount_eur": 3920.0, "status": "payment_failed"}
+    ]
+  }
+}

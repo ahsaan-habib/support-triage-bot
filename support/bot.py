@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from . import config, handoff, knowledge, triage
+from . import account, config, handoff, knowledge, triage
 
 ESCALATE_MSG = ("I'm not able to answer that one reliably, so I'm passing you to "
                 "a member of the support team. They'll reply here.")
@@ -44,6 +44,13 @@ def handle(conv: Conversation, message: str) -> Reply:
             context["docs"] = "no help article covers this"
     elif t.route == "account" and config.FAQ_ONLY:
         context["account"] = "account tools disabled (FAQ-only mode)"
+    elif t.route == "account":
+        text, facts = account.answer(conv.customer_id, message)
+        context["account_facts"] = facts
+        if text:
+            reply = Reply(text, "account")
+        else:
+            context["account"] = "account lookup didn't resolve it"
 
     if reply is None:
         reason = t.reason if t.route == "escalate" else context.get("docs") or context.get("account", t.reason)
