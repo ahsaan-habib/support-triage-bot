@@ -1,0 +1,35 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flowdesk support</title>
+<style>
+  body { font: 15px system-ui, sans-serif; max-width: 560px; margin: 32px auto; padding: 0 16px; color: #1d2433; }
+  #log { border: 1px solid #dde2ea; border-radius: 8px; padding: 12px; min-height: 280px; }
+  .me { text-align: right; color: #2f6fde; margin: 8px 0; }
+  .bot { margin: 8px 0; }
+  .src { color: #8a93a6; font-size: 12px; }
+  form { display: flex; gap: 8px; margin-top: 12px; }
+  input { flex: 1; font: inherit; padding: 8px; border: 1px solid #c5ccd8; border-radius: 6px; }
+</style>
+<h2>Support</h2>
+<p class="src">Dev page: paste a session token from <code>python -m support.session cus_001</code></p>
+<input id="token" placeholder="session token">
+<div id="log"></div>
+<form id="f"><input id="q" placeholder="Ask a question" autocomplete="off"><button>Send</button></form>
+<script>
+let convId = null;
+const log = (cls, text) => { const d = document.createElement("div"); d.className = cls; d.textContent = text; document.getElementById("log").appendChild(d); return d; };
+document.getElementById("f").onsubmit = async (e) => {
+  e.preventDefault();
+  const q = document.getElementById("q"); const text = q.value.trim(); if (!text) return;
+  q.value = ""; log("me", text);
+  const r = await fetch("/chat", { method: "POST", headers: { "content-type": "application/json",
+    authorization: "Bearer " + document.getElementById("token").value },
+    body: JSON.stringify({ message: text, conversation_id: convId }) });
+  if (!r.ok) { log("src", "error " + r.status); return; }
+  const j = await r.json(); convId = j.conversation_id;
+  log("bot", j.reply);
+  if (j.citations.length) log("src", "Sources: " + j.citations.join(" · "));
+  if (j.ticket_id) log("src", "Ticket #" + j.ticket_id + " opened");
+};
+</script>

@@ -8,6 +8,8 @@ dependencies = [
     "pydantic>=2.7",
     "chromadb>=0.5",
     "sentence-transformers>=3.0",
+    "fastapi>=0.111",
+    "uvicorn[standard]>=0.30",
 ]
 
 [build-system]
@@ -16,3 +18,6 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 include = ["support*"]
+
+[tool.setuptools.package-data]
+support = ["static/*"]
