@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from . import account, config, handoff, knowledge, triage
+from . import account, config, handoff, knowledge, metrics, triage
 
 ESCALATE_MSG = ("I'm not able to answer that one reliably, so I'm passing you to "
                 "a member of the support team. They'll reply here.")
@@ -19,11 +19,13 @@ class Reply:
     route: str                      # knowledge | account | escalated
     citations: list[str] = field(default_factory=list)
     ticket_id: int | None = None
+    turn_id: int | None = None
 
 
 @dataclass
 class Conversation:
     customer_id: str
+    id: str = ""
     history: list[dict] = field(default_factory=list)
 
     def add(self, role: str, text: str) -> None:
@@ -57,5 +59,7 @@ def handle(conv: Conversation, message: str) -> Reply:
         priority = "urgent" if t.sentiment == "angry" or t.reason.startswith("hard rule") else "normal"
         ticket = handoff.open_ticket(conv.customer_id, reason, conv.history, context, priority)
         reply = Reply(ESCALATE_MSG, "escalated", ticket_id=ticket)
+        context["reason"] = reason
+    reply.turn_id = metrics.record(conv.id, reply.route, context.get("reason", ""))
     conv.add("assistant", reply.text)
     return reply

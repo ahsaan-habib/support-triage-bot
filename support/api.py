@@ -9,7 +9,7 @@ from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from . import handoff, session
+from . import handoff, metrics, session
 from .bot import Conversation, handle
 
 app = FastAPI(title="support-triage-bot")
@@ -40,10 +40,26 @@ def chat(body: ChatIn, customer_id: str = Depends(customer)) -> dict:
     cid = body.conversation_id or uuid.uuid4().hex
     conv = conversations.get(cid)
     if conv is None or conv.customer_id != customer_id:
-        conv = conversations[cid] = Conversation(customer_id)
+        conv = conversations[cid] = Conversation(customer_id, id=cid)
     reply = handle(conv, body.message)
     return {"conversation_id": cid, "reply": reply.text, "route": reply.route,
-            "citations": reply.citations, "ticket_id": reply.ticket_id}
+            "citations": reply.citations, "ticket_id": reply.ticket_id, "turn_id": reply.turn_id}
+
+
+class FeedbackIn(BaseModel):
+    turn_id: int
+    helpful: bool
+
+
+@app.post("/feedback")
+def give_feedback(body: FeedbackIn, customer_id: str = Depends(customer)) -> dict:
+    metrics.feedback(body.turn_id, body.helpful)
+    return {"ok": True}
+
+
+@app.get("/agent/metrics", dependencies=[Depends(agent)])
+def get_metrics(days: float = 7) -> dict:
+    return metrics.summary(days)
 
 
 @app.get("/agent/tickets", dependencies=[Depends(agent)])

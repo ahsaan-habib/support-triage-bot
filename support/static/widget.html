@@ -28,7 +28,16 @@ document.getElementById("f").onsubmit = async (e) => {
     body: JSON.stringify({ message: text, conversation_id: convId }) });
   if (!r.ok) { log("src", "error " + r.status); return; }
   const j = await r.json(); convId = j.conversation_id;
-  log("bot", j.reply);
+  const b = log("bot", j.reply);
+  if (j.route !== "escalated") {
+    for (const [label, helpful] of [["👍", true], ["👎", false]]) {
+      const btn = document.createElement("button"); btn.textContent = label;
+      btn.onclick = () => fetch("/feedback", { method: "POST", headers: { "content-type": "application/json",
+        authorization: "Bearer " + document.getElementById("token").value },
+        body: JSON.stringify({ turn_id: j.turn_id, helpful }) }).then(() => btn.parentElement.querySelectorAll("button").forEach(x => x.disabled = true));
+      b.appendChild(btn);
+    }
+  }
   if (j.citations.length) log("src", "Sources: " + j.citations.join(" · "));
   if (j.ticket_id) log("src", "Ticket #" + j.ticket_id + " opened");
 };
