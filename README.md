@@ -1,7 +1,7 @@
 # support-triage-bot
 
 Blueprint 1 from *Designing AI Automation for Your Business*: intelligent
-customer support. Local model (`qwen3:4b` via Ollama), local embeddings,
+customer support. Local model (`qwen3:4b-instruct` via Ollama), local embeddings,
 everything open source.
 
 ```
@@ -45,7 +45,7 @@ failures), and CSAT from 👍/👎 on bot answers.
 ## Run it
 
 ```bash
-ollama pull qwen3:4b
+ollama pull qwen3:4b-instruct   # not plain qwen3:4b: that tag is now a thinking-only build
 make install && source .venv/bin/activate
 make index                 # help_docs/ -> chroma
 make serve                 # widget at http://localhost:8020

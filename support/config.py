@@ -6,7 +6,7 @@ def env(name: str, default: str) -> str:
 
 
 OLLAMA_URL = env("OLLAMA_URL", "http://localhost:11434")
-MODEL = env("MODEL", "qwen3:4b")
+MODEL = env("MODEL", "qwen3:4b-instruct")
 EMBED_MODEL = env("EMBED_MODEL", "BAAI/bge-small-en-v1.5")
 DOCS_DIR = env("DOCS_DIR", "help_docs")
 INDEX_DIR = env("INDEX_DIR", ".chroma")
