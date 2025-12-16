@@ -82,6 +82,8 @@ def answer(customer_id: str, question: str, max_steps: int = 3) -> tuple[str, li
                 result = fn(**args) if fn else {"error": f"unknown tool {name}"}
             except TypeError as e:
                 result = {"error": f"bad arguments: {e}"}
+            except KeyError:      # signed-in customer with no billing record
+                result = {"error": "no billing data for this account"}
             facts.append({"tool": name, "args": args, "result": result})
             messages.append({"role": "tool", "tool_name": name, "content": json.dumps(result)})
     return "", facts   # ran out of steps: caller escalates
