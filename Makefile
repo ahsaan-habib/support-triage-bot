@@ -1,4 +1,4 @@
-.PHONY: install index serve token
+.PHONY: install index serve token test
 install:
 	python -m venv .venv && .venv/bin/pip install -e .
 index:
@@ -7,3 +7,6 @@ serve:
 	uvicorn support.api:app --port 8020
 token:
 	@python -m support.session $(or $(C),cus_001)
+
+test:
+	pytest -q

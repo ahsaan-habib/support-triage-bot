@@ -5,3 +5,4 @@ __pycache__/
 *.egg-info/
 .chroma/
 *.db
+.pytest_cache/
